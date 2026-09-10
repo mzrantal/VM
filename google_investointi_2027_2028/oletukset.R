@@ -62,24 +62,29 @@ ARVONLISAYS_KERTOIMET <- c(
 #
 # RAJAUS: kertoimet kuvaavat vain SUOMEEN kohdistuvaa tyovoiman kysyntaa
 # (tyo joka tehdaan/kysytaan Suomessa), ei investoinnin globaalia
-# tyollisyysjalanjalkea. Siksi it_laitteet-kerroin on niin matala: palvelin-
-# ja verkkolaitevalmistuksen tyovoima (Taiwan, USA, Etela-Korea ym.) on
-# tarkoituksella jatetty kokonaan pois, koska se ei kohdistu Suomeen. Vain
-# Suomessa tehtava logistiikka-, tukkukauppa- ja asennustyo lasketaan mukaan.
-# Rakentamisen/asennuksen kertoimet taas lasketaan tayspainoisina, koska
-# tyomaat sijaitsevat Suomessa - malli ei erottele suomalaisia ja ulkomaisia
-# (esim. lahetettyja) tyontekijoita, vain sen missa tyo suoritetaan. Ks.
-# RAPORTTI.md:n kohta "Tyollisyysvaikutukset" / "Rajaus: vain Suomeen
-# kohdistuva tyovoiman kysynta".
+# tyollisyysjalanjalkea.
+#
+# it_laitteet on tarkoituksella asetettu nollaan: paitsi etta palvelin- ja
+# verkkolaitevalmistuksen tyovoima (Taiwan, USA, Etela-Korea ym.) ei kohdistu
+# Suomeen, myos jaljelle jaava pieni kotimainen logistiikka-, tukkukauppa- ja
+# asennustyon osuus on rajattu tasta tyollisyystarkastelusta kokonaan pois -
+# analyysi keskittyy vain selvasti ja kokonaan Suomeen kohdistuvaan tyohon.
+# Tama tekee tyollisyysarviosta hieman varovaisen (aliarvion) siina mielessa,
+# etta pieni maara todellista kotimaista tyota (esim. laitteiden
+# vastaanotto/asennus paikan paalla) jaa nyt laskematta mukaan.
+#
+# Rakentamisen/asennuksen kertoimet lasketaan tayspainoisina, koska tyomaat
+# sijaitsevat Suomessa - malli ei erottele suomalaisia ja ulkomaisia (esim.
+# lahetettyja) tyontekijoita, vain sen missa tyo suoritetaan. Ks. RAPORTTI.md:n
+# kohta "Tyollisyysvaikutukset" / "Rajaus: vain Suomeen kohdistuva tyovoiman
+# kysynta".
 #
 # KARKEITA ARVIOITA - ei Tilastokeskuksen tyollisyys-panos-tuotostaulukoista
 # laskettuja tarkkoja kertoimia, samasta rajapintarajoitteen syysta kuin
 # ARVONLISAYS_KERTOIMET (ks. yllaoleva huomautus ja RAPORTTI.md:n kohdat
-# "Lahteet..." ja "Tyollisyysvaikutukset"). Rakentaminen on selvasti
-# tyovoimavaltaisempaa kuin tuontivaltaiset IT-laitteet, joissa kotimaahan jaa
-# lahinna logistiikka-, tukkukauppa- ja asennustyota.
+# "Lahteet..." ja "Tyollisyysvaikutukset").
 TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR <- c(
-  it_laitteet = 1.0,
+  it_laitteet = 0,
   talonrakennus = 6.5,
   talotekniikka_asennus = 5.5,
   maa_ja_vesirakentaminen = 5.0
