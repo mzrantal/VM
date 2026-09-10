@@ -15,7 +15,7 @@ arvonlisäystä sekä suoraan (rakennus- ja asennustyö) että epäsuorasti
 (alihankintaketjut: sora, betoni, sähkötarvikkeet, kuljetukset jne.).
 
 Tässä repossa (`google_investointi_2027_2028/`) on toteutettu laskentaputki,
-joka tekee juuri tämän jaottelun. Nykyisillä oletuksilla (`oletukset.py`,
+joka tekee juuri tämän jaottelun. Nykyisillä oletuksilla (`oletukset.R`,
 ks. rajoitteet alla) tulos on:
 
 | Vuosi | Investointi | BKT-vaikutus | Osuus investoinnista |
@@ -38,12 +38,12 @@ rakennusvaiheen piikki.
 
 (Osuus laski aiemmasta 35 %:sta 25 %:iin, koska oletettua IT-laitteiden
 osuutta investoinnista nostettiin 50 %:sta 75 %:iin 10.9.2026 tehdyssä
-`oletukset.py`-päivityksessä - IT-laitteiden kotimaisen arvonlisäyksen
+`oletukset.R`-päivityksessä - IT-laitteiden kotimaisen arvonlisäyksen
 kerroin on toimialoista matalin.)
 
 ## Menetelmä (mitä koodi tekee)
 
-1. **Kysyntäshokit toimialoittain** (`oletukset.py`): 13 mrd. euron
+1. **Kysyntäshokit toimialoittain** (`oletukset.R`): 13 mrd. euron
    investointi jaetaan neljään toimialaryhmään tyypillisen suuren
    konesalihankkeen kustannusrakenteen mukaan:
    - IT-laitteet (palvelimet, verkkolaitteet, GPU:t) - 75 %
@@ -52,7 +52,7 @@ kerroin on toimialoista matalin.)
    - Maa- ja vesirakentaminen (tontti, liittymät, infra) - 5 %
    - Vuosijakauma 2027/2028: oletus 50/50.
 
-2. **Kotimaisen arvonlisäyksen kertoimet** (`oletukset.py`): kullekin
+2. **Kotimaisen arvonlisäyksen kertoimet** (`oletukset.R`): kullekin
    toimialalle kerroin, joka kuvaa kuinka moni sentti eurosta jää
    Suomen BKT:hen (arvonlisäyksenä) suoran ja epäsuoran
    (alihankintaketjun) vaikutuksen kautta, tuontivuodolla oikaistuna.
@@ -62,20 +62,20 @@ kerroin on toimialoista matalin.)
    hinta valuu tuontiin, kotimaahan jää lähinnä tukkukauppa- ja
    asennusmarginaali).
 
-3. **Laskenta** (`laske_vaikutus.py`): shokki x kerroin summattuna
+3. **Laskenta** (`laske_vaikutus.R`): shokki x kerroin summattuna
    toimialoittain ja vuosittain.
 
-4. **Täysi panos-tuotosmalli valmiina käytettäväksi** (`malli.py`): jos/kun
+4. **Täysi panos-tuotosmalli valmiina käytettäväksi** (`malli.R`): jos/kun
    käytössä on oikea Tilastokeskuksen tarjonta- ja käyttötaulukoista laskettu
    toimialoittainen kerroinmatriisi A (vain kotimaiset välituotepanokset) ja
-   arvonlisäyskertoimet, `malli.py` ratkaisee Leontief-mallin
-   `x = (I - A)^-1 * d` ja laskee siitä tarkan BKT-vaikutuksen. Tämä ottaa
-   oletukset.py:n yksinkertaista kerroinmallia paremmin huomioon myös
-   toimialojen väliset epäsuorat kytkennät (esim. rakennusteollisuuden
-   panokset metalliteollisuudesta).
+   arvonlisäyskertoimet, `malli.R` ratkaisee Leontief-mallin
+   `x = (I - A)^-1 %*% d` (base R:n `solve()`-funktiolla) ja laskee siitä
+   tarkan BKT-vaikutuksen. Tämä ottaa oletukset.R:n yksinkertaista
+   kerroinmallia paremmin huomioon myös toimialojen väliset epäsuorat
+   kytkennät (esim. rakennusteollisuuden panokset metalliteollisuudesta).
 
-5. **Tilastokeskuksen data** (`hae_tilastokeskus.py`): valmis apufunktio
-   PxWeb-rajapinnan JSON-stat2-kyselyihin.
+5. **Tilastokeskuksen data** (`hae_tilastokeskus.R`): valmis apufunktio
+   PxWeb-rajapinnan JSON-kyselyihin (`httr`- ja `jsonlite`-paketeilla).
 
 ## Miksi tulos on vain suuruusluokka-arvio
 
@@ -116,8 +116,8 @@ muita matalampi:
 | 75 % (nykyinen oletus) | ~0,25 | ~3,2 mrd. e |
 | 90 % | ~0,19 | ~2,5 mrd. e |
 
-Voit testata muita jakaumia muokkaamalla `oletukset.py`:n
-`TOIMIALAOSUUDET`-sanakirjaa ja ajamalla `laske_vaikutus.py` uudelleen.
+Voit testata muita jakaumia muokkaamalla `oletukset.R`:n
+`TOIMIALAOSUUDET`-vektoria ja ajamalla `laske_vaikutus.R` uudelleen.
 
 ## Näin jatkat tarkemmalla datalla
 
@@ -125,24 +125,26 @@ Voit testata muita jakaumia muokkaamalla `oletukset.py`:n
    (`pxdata.stat.fi/PxWeb/pxweb/fi/StatFin/`) kansantalouden tilinpidon
    kohdasta oikea tarjonta- ja käyttötaulukko / panos-tuotostaulukko
    (uusin saatavilla oleva vuosi).
-2. Aseta taulukon rajapinta-URL `hae_tilastokeskus.py`:n
+2. Aseta taulukon rajapinta-URL `hae_tilastokeskus.R`:n
    `TAULUKON_URL`-muuttujaan.
-3. Hae taulukon metatiedot (`hae_taulukon_metatiedot`) selvittääksesi
+3. Asenna tarvittavat R-paketit: `install.packages(c("httr", "jsonlite"))`.
+4. Hae taulukon metatiedot (`hae_taulukon_metatiedot`) selvittääksesi
    toimialakoodit ja muuttujat, rakenna kysely ja hae data
    (`hae_pxweb_data`).
-4. Muodosta taulukoista tekninen kerroinmatriisi A (vain kotimaiset
+5. Muodosta taulukoista tekninen kerroinmatriisi A (vain kotimaiset
    välituotepanokset suhteessa tuotokseen) ja arvonlisäyskertoimet
    toimialoittain.
-5. Syötä ne `malli.py`:n `value_added_impact(A, arvonlisayskertoimet, d)`
-   -funktioon `oletukset.py`:n kysyntäshokkivektorin (`d`) kanssa - saat
+6. Syötä ne `malli.R`:n `arvonlisays_vaikutus(A, arvonlisayskertoimet, d)`
+   -funktioon `oletukset.R`:n kysyntäshokkivektorin (`d`) kanssa - saat
    tarkan, tuontivuodosta puhdistetun BKT-vaikutuksen.
 
 ## Tiedostot
 
-- `oletukset.py` - investoinnin toimiala- ja vuosijakauma sekä
+- `oletukset.R` - investoinnin toimiala- ja vuosijakauma sekä
   arvonlisäyskertoimet (muokattavat lähtöoletukset)
-- `malli.py` - Leontief-panos-tuotoslaskenta (puhdas Python, ei
+- `malli.R` - Leontief-panos-tuotoslaskenta (base R, ei
   ulkoisia riippuvuuksia)
-- `hae_tilastokeskus.py` - PxWeb-rajapinnan hakufunktiot
-- `laske_vaikutus.py` - pääskripti, tulostaa BKT-vaikutuksen
-  vuosittain ja toimialoittain (`python3 laske_vaikutus.py`)
+- `hae_tilastokeskus.R` - PxWeb-rajapinnan hakufunktiot (riippuvuudet:
+  `httr`, `jsonlite`)
+- `laske_vaikutus.R` - pääskripti, tulostaa BKT-vaikutuksen
+  vuosittain ja toimialoittain (`Rscript laske_vaikutus.R`)
