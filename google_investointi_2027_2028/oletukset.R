@@ -60,6 +60,18 @@ ARVONLISAYS_KERTOIMET <- c(
 # kysyntashokin suoraan kertoimella) toimii samalla tavalla kuin
 # ARVONLISAYS_KERTOIMET:n kanssa.
 #
+# RAJAUS: kertoimet kuvaavat vain SUOMEEN kohdistuvaa tyovoiman kysyntaa
+# (tyo joka tehdaan/kysytaan Suomessa), ei investoinnin globaalia
+# tyollisyysjalanjalkea. Siksi it_laitteet-kerroin on niin matala: palvelin-
+# ja verkkolaitevalmistuksen tyovoima (Taiwan, USA, Etela-Korea ym.) on
+# tarkoituksella jatetty kokonaan pois, koska se ei kohdistu Suomeen. Vain
+# Suomessa tehtava logistiikka-, tukkukauppa- ja asennustyo lasketaan mukaan.
+# Rakentamisen/asennuksen kertoimet taas lasketaan tayspainoisina, koska
+# tyomaat sijaitsevat Suomessa - malli ei erottele suomalaisia ja ulkomaisia
+# (esim. lahetettyja) tyontekijoita, vain sen missa tyo suoritetaan. Ks.
+# RAPORTTI.md:n kohta "Tyollisyysvaikutukset" / "Rajaus: vain Suomeen
+# kohdistuva tyovoiman kysynta".
+#
 # KARKEITA ARVIOITA - ei Tilastokeskuksen tyollisyys-panos-tuotostaulukoista
 # laskettuja tarkkoja kertoimia, samasta rajapintarajoitteen syysta kuin
 # ARVONLISAYS_KERTOIMET (ks. yllaoleva huomautus ja RAPORTTI.md:n kohdat

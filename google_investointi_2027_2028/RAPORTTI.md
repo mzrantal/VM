@@ -169,7 +169,34 @@ oletuksilla (`laske_vaikutus.R`):
 
 Karkeasti siis **n. 14 300 henkilötyövuotta vuodessa** (yhteensä n. 28 600 htv
 kahden vuoden aikana) rakennus- ja asennustyötä sekä IT-laitteiden
-logistiikkaan/asennukseen liittyvää työtä. Huomioita:
+logistiikkaan/asennukseen liittyvää työtä.
+
+**Rajaus: vain Suomeen kohdistuva työvoiman kysyntä.** Luvut kuvaavat
+tarkoituksella yksinomaan sitä työvoiman kysyntää, joka syntyy ja on
+tehtävä Suomessa - eivät investoinnin globaalia työllisyysjalanjälkeä.
+Käytännössä tämä näkyy toimialoittaisissa kertoimissa:
+
+- **IT-laitteet:** kertoimessa (1,0 htv/milj. e) ei ole mukana lainkaan
+  palvelimien, verkkolaitteiden tai GPU:iden valmistukseen liittyvää
+  työvoimaa - se tapahtuu ulkomailla (mm. Taiwanissa, Yhdysvalloissa,
+  Etelä-Koreassa), ei Suomessa, eikä siis kasvata Suomen työllisyyttä.
+  Kerroin sisältää vain Suomessa tehtävän logistiikka-, tukkukauppa- ja
+  asennustyön. Jos investoinnin *koko* globaali työllisyysvaikutus
+  (valmistus mukaan lukien) haluttaisiin arvioida, tarvittaisiin täysin
+  eri, kansainvälinen malli ja ulkomaiden tilastoja - sitä ei ole tehty
+  tässä.
+- **Rakentaminen ja asennus:** kertoimet (5,0-6,5 htv/milj. e) kuvaavat
+  Suomessa fyysisesti tehtävää työtä (työmaat sijaitsevat Suomessa), joten
+  ne lasketaan mukaan kokonaisuudessaan, vaikka osa työmailla työskentelevistä
+  yksittäisistä työntekijöistä olisikin ulkomaalaisia (esim. lähetettyjä
+  työntekijöitä EU:sta) - kyse on silti Suomeen kohdistuvasta työvoiman
+  kysynnästä, koska työ tehdään täällä. Malli ei ota kantaa työntekijöiden
+  kansallisuuteen, vain siihen missä työ suoritetaan.
+- Tuontipanosten (esim. rakennusmateriaalien) valmistukseen ulkomailla
+  liittyvä työvoima on samoin jätetty pois, samasta syystä kuin BKT-mallissa
+  tuontivuoto on netotettu pois arvonlisäyskertoimista.
+
+Huomioita:
 
 - **Henkilötyövuosi (htv) ei ole sama asia kuin pysyvä työpaikka.** Yksi htv
   voi jakautua usealle henkilölle osa-aikaisena tai lyhytkestoisena työnä -
