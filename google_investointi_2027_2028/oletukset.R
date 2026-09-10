@@ -64,14 +64,16 @@ ARVONLISAYS_KERTOIMET <- c(
 # (tyo joka tehdaan/kysytaan Suomessa), ei investoinnin globaalia
 # tyollisyysjalanjalkea.
 #
-# it_laitteet on tarkoituksella asetettu nollaan: paitsi etta palvelin- ja
-# verkkolaitevalmistuksen tyovoima (Taiwan, USA, Etela-Korea ym.) ei kohdistu
-# Suomeen, myos jaljelle jaava pieni kotimainen logistiikka-, tukkukauppa- ja
-# asennustyon osuus on rajattu tasta tyollisyystarkastelusta kokonaan pois -
-# analyysi keskittyy vain selvasti ja kokonaan Suomeen kohdistuvaan tyohon.
-# Tama tekee tyollisyysarviosta hieman varovaisen (aliarvion) siina mielessa,
-# etta pieni maara todellista kotimaista tyota (esim. laitteiden
-# vastaanotto/asennus paikan paalla) jaa nyt laskematta mukaan.
+# it_laitteet-kertoimeen (0,4 htv/milj. e) lasketaan mukaan VAIN se osa
+# IT-laitteiden tyollisyysvaikutuksesta, joka on yksiselitteisesti Suomessa
+# tehtavaa tyota: laitteiden asennus, kaapelointi ja kayttoonotto
+# konesalilla. Palvelin- ja verkkolaitevalmistuksen tyovoima (Taiwan, USA,
+# Etela-Korea ym.) ei kuulu tahan, koska se ei kohdistu Suomeen. Myoskaan
+# yleista tukkukauppaa/logistiikkaa (esim. maahantuonnin hallinnointi,
+# varastointi) ei ole taman tarkemmin eritelty mukaan, koska sen
+# tyollisyysvaikutus per euro on epavarmempi ja pienempi kuin selvasti
+# paikan paalla tehtavan asennustyon - painopiste on siina osassa tyosta,
+# joka varmimmin ja selkeimmin kohdistuu Suomeen.
 #
 # Rakentamisen/asennuksen kertoimet lasketaan tayspainoisina, koska tyomaat
 # sijaitsevat Suomessa - malli ei erottele suomalaisia ja ulkomaisia (esim.
@@ -84,7 +86,7 @@ ARVONLISAYS_KERTOIMET <- c(
 # ARVONLISAYS_KERTOIMET (ks. yllaoleva huomautus ja RAPORTTI.md:n kohdat
 # "Lahteet..." ja "Tyollisyysvaikutukset").
 TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR <- c(
-  it_laitteet = 0,
+  it_laitteet = 0.4,
   talonrakennus = 6.5,
   talotekniikka_asennus = 5.5,
   maa_ja_vesirakentaminen = 5.0

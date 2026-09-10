@@ -127,14 +127,16 @@ oikeat luvut sijaitsevat, ei sitaatti niistä.
   osuus rakennus- ja talotekniikkaosuuteen nähden) julkaisevat markkina-
   analyyseja mm. Uptime Institute, JLL, CBRE ja Synergy Research Group.
 
-**Työllisyyskertoimet (0 / 6,5 / 5,5 / 5,0 htv/milj. e):**
+**Työllisyyskertoimet (0,4 / 6,5 / 5,5 / 5,0 htv/milj. e):**
 - Ensisijainen, oikea lähde: Tilastokeskuksen toimialoittainen
   työllisyys-panos-tuotostaulukko (sama tietokanta kuin yllä), josta saisi
   tarkat htv/tuotanto-suhteet toimialoittain.
 - Rakentamisen työllisyyskertoimista julkaisee arvioita mm. Rakennusteollisuus
   RT suhdanne- ja työllisyyskatsauksissaan.
-- IT-laitteiden kerroin on asetettu nollaan tietoisena rajauksena (ei
-  kirjallisuudesta johdettu luku): ks. "Työllisyysvaikutukset"-kohta.
+- IT-laitteiden matala kerroin on tietoinen rajaus (ei kirjallisuudesta
+  johdettu luku): mukana on vain Suomessa tehtävä asennus-/käyttöönottotyö,
+  ei laitevalmistus eikä yleinen tukkukauppa/logistiikka - ks.
+  "Työllisyysvaikutukset"-kohta.
 
 ## Herkkyys oletuksille
 
@@ -162,29 +164,29 @@ oletuksilla (`laske_vaikutus.R`):
 
 | Vuosi | IT-laitteet | Talonrakennus | Talotekniikka | Maa- ja vesirak. | Yhteensä |
 |---|---|---|---|---|---|
-| 2027 | 0 htv (rajattu pois) | 4 225 htv | 3 575 htv | 1 625 htv | **9 425 htv** |
-| 2028 | 0 htv (rajattu pois) | 4 225 htv | 3 575 htv | 1 625 htv | **9 425 htv** |
-| **Yhteensä** | | | | | **~18 850 htv** |
+| 2027 | 1 950 htv | 4 225 htv | 3 575 htv | 1 625 htv | **11 375 htv** |
+| 2028 | 1 950 htv | 4 225 htv | 3 575 htv | 1 625 htv | **11 375 htv** |
+| **Yhteensä** | | | | | **~22 750 htv** |
 
-Karkeasti siis **n. 9 425 henkilötyövuotta vuodessa** (yhteensä n. 18 850 htv
-kahden vuoden aikana), yksinomaan rakennus- ja asennustyötä.
+Karkeasti siis **n. 11 375 henkilötyövuotta vuodessa** (yhteensä n. 22 750 htv
+kahden vuoden aikana).
 
-**Rajaus: vain Suomeen kohdistuva työvoiman kysyntä - IT-laitteet
-kokonaan pois.** Luvut kuvaavat tarkoituksella yksinomaan sitä työvoiman
-kysyntää, joka syntyy ja on tehtävä Suomessa - eivät investoinnin globaalia
-työllisyysjalanjälkeä. Käytännössä:
+**Rajaus: vain Suomeen kohdistuva työvoiman kysyntä.** Luvut kuvaavat
+tarkoituksella yksinomaan sitä työvoiman kysyntää, joka syntyy ja on tehtävä
+Suomessa - eivät investoinnin globaalia työllisyysjalanjälkeä. Käytännössä:
 
-- **IT-laitteet on rajattu tarkastelusta kokonaan pois (kerroin = 0).**
+- **IT-laitteista lasketaan mukaan vain Suomessa fyysisesti tehtävä
+  asennus-, kaapelointi- ja käyttöönottotyö** (kerroin 0,4 htv/milj. e).
   Palvelimien, verkkolaitteiden ja GPU:iden valmistus tapahtuu ulkomailla
-  (mm. Taiwanissa, Yhdysvalloissa, Etelä-Koreassa), joten se ei kasvata
-  Suomen työllisyyttä eikä kuulu tähän tarkasteluun. Myös jäljelle jäävä,
-  pienempi kotimainen logistiikka-, tukkukauppa- ja asennustyön osuus on
-  tietoisesti jätetty pois, jotta tarkastelu rajautuu selkeästi ja yksin-
-  omaan Suomeen kohdistuvaan työhön - tämä tekee arviosta hieman varovaisen
-  (todellinen Suomeen kohdistuva htv-määrä voi olla marginaalisesti tätä
-  suurempi). Jos investoinnin *koko* globaali työllisyysvaikutus (valmistus
-  mukaan lukien) haluttaisiin arvioida, tarvittaisiin täysin eri,
-  kansainvälinen malli ja ulkomaiden tilastoja - sitä ei ole tehty tässä.
+  (mm. Taiwanissa, Yhdysvalloissa, Etelä-Koreassa) eikä kohdistu Suomeen,
+  joten sitä ei lasketa mukaan. Myöskään yleistä tukkukauppaa/logistiikkaa
+  (maahantuonnin hallinnointi, varastointi) ei ole tarkemmin eritelty
+  mukaan - painopiste on siinä osassa työstä, joka varmimmin ja selkeimmin
+  kohdistuu Suomeen. Tämä tekee arviosta edelleen varovaisen (todellinen
+  Suomeen kohdistuva htv-määrä voi olla jonkin verran tätä suurempi). Jos
+  investoinnin *koko* globaali työllisyysvaikutus (valmistus mukaan
+  lukien) haluttaisiin arvioida, tarvittaisiin täysin eri, kansainvälinen
+  malli ja ulkomaiden tilastoja - sitä ei ole tehty tässä.
 - **Rakentaminen ja asennus (talonrakennus, talotekniikka-/koneasennus,
   maa- ja vesirakentaminen) lasketaan täysimääräisenä**, koska työmaat
   sijaitsevat Suomessa - kyse on Suomeen kohdistuvasta työvoiman
@@ -199,7 +201,7 @@ Huomioita:
 
 - **Henkilötyövuosi (htv) ei ole sama asia kuin pysyvä työpaikka.** Yksi htv
   voi jakautua usealle henkilölle osa-aikaisena tai lyhytkestoisena työnä -
-  luku ei tarkoita 18 850 uutta pysyvää työntekijää.
+  luku ei tarkoita 22 750 uutta pysyvää työntekijää.
 - **Vain rakennusvaiheen tilapäinen vaikutus.** Työ liittyy 2027-2028
   rakennus- ja asennustöihin; suurin osa siitä päättyy konesalin
   valmistuttua.
@@ -218,7 +220,7 @@ Huomioita:
 
 Vertailun vuoksi: Suomen koko rakennusala on työllistänyt viime vuosina
 suuruusluokkaa 170 000-200 000 henkilöä (karkea, tässä istunnossa
-tarkistamaton arvio). N. 9 425 htv/vuosi vastaisi siis karkeasti n. 5 %
+tarkistamaton arvio). N. 11 375 htv/vuosi vastaisi siis karkeasti n. 6 %
 koko alan työvoimasta - merkittävä yksittäiselle hankkeelle, mutta
 jakautuisi todennäköisesti usealle vuodelle ja monelle eri alihankkijalle eri
 puolilla Suomea, ei yhdelle työmaalle.
