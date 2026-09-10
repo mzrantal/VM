@@ -15,23 +15,26 @@
 #      vaikutuksen ja on puhdistettu tuontivuodosta.
 #   3. Tulokset summataan vuosittain ja koko ajanjaksolle.
 #
-# BKT-osalle on kaksi laskentapolkua:
-#   1. OIKEA DATA (jos data/kaanteismatriisi_14yq.csv ja
-#      data/arvonlisays_tuotos_14yn.csv loytyvat - ks. data/README.md):
-#      kaytetaan Tilastokeskuksen valmista Leontiefin kaanteismatriisia
-#      (malli.R: arvonlisays_vaikutus_kaanteismatriisilla()) - tarkka tulos.
-#   2. KARKEA ARVIO (oletus, jos oikeaa dataa ei loydy): oletukset.R:n
-#      kirjallisuuteen pohjautuvat ARVONLISAYS_KERTOIMET kerrottuna
+# Seka BKT- etta tyollisyysvaikutukselle on kaksi laskentapolkua:
+#   1. OIKEA DATA (jos data/panoskertoimet_14yq.csv ja
+#      data/kayttotaulukko_14yn.csv loytyvat - ks. data/README.md):
+#      kaytetaan Tilastokeskuksen oikeaa, 63 toimialan teknista
+#      kerroinmatriisia A (14yq, kayttajan vahvistamana KOTIMAINEN),
+#      ratkaistaan taydellinen Leontief-malli (malli.R:
+#      leontief_tuotanto()) ja kerrotaan tuloksena saatu kokonaistuotanto
+#      taulukosta 14yq saatavalla arvonlisayskertoimella (BKT) ja
+#      taulukosta 14yn lasketulla tyollisyyskertoimella (tyollisyys).
+#      HUOM: tata kaytetaan VAIN rakentamiselle (talonrakennus, maa- ja
+#      vesirakentaminen, talotekniikka-/koneasennus) - ei IT-laitteille,
+#      ks. RAPORTTI.md:n kohta "Miksi IT-laitteet ei kayta oikeaa
+#      Leontief-mallia" (lyhyesti: 14yq:n kotimainen A-matriisi olettaisi
+#      virheellisesti etta koko tuontivaltainen IT-hankinta kysyisi lisaa
+#      kotimaista tietokonevalmistusta).
+#   2. KARKEA ARVIO (IT-laitteille aina, ja rakentamisellekin
+#      varafallbackina jos oikeaa dataa ei loydy tai sen lukeminen
+#      epaonnistuu): oletukset.R:n kirjallisuuteen pohjautuvat
+#      ARVONLISAYS_KERTOIMET/TYOLLISYYS_KERTOIMET kerrottuna
 #      toimialoittaisilla kysyntashokeilla - suuruusluokka-arvio.
-#
-# TYOLLISYYSVAIKUTUS lasketaan aina karkealla arviolla (TYOLLISYYS_KERTOIMET),
-# koska vastaavaa valmista tyollisyys-panos-tuotostaulukkoa ei ole (viela)
-# kaytetty tassa.
-#
-# TAMA ISTUNTO: Tilastokeskuksen rajapinta ei ollut tavoitettavissa
-# (hiekkalaatikkoymparistön ulosmenevan verkkoliikenteen rajoitus), joten
-# data/-kansio on tyhja ja BKT-laskenta kayttaa polkua 2 (karkea arvio).
-# Ks. data/README.md, miten oikea data otetaan kayttoon.
 
 skriptin_kansio <- function() {
   args <- commandArgs(trailingOnly = FALSE)
@@ -79,38 +82,73 @@ laske_vaikutus <- function(kertoimet) {
 
 laske <- function() laske_vaikutus(ARVONLISAYS_KERTOIMET)
 
-#' BKT-vaikutus oikealla Tilastokeskus-datalla (14yq: kaanteismatriisi,
-#' 14yn: tuotos/arvonlisays), TOIMIALA_KOODIT_14Y-vastaavuuden kautta.
-#' Palauttaa saman list(tulokset=..., yhteensa=...) -muodon kuin
-#' laske_vaikutus(), mutta tiedot$vaikutus_toimialoittain kattaa TASSA
-#' KAIKKI kaanteismatriisin toimialat (ei vain omaa nelja ryhmaamme),
-#' koska kaanteismatriisi levittaa vaikutuksen koko toimialaverkostoon.
-laske_bkt_oikealla_datalla <- function(data_kansio) {
-  kaanteismatriisi <- lataa_kaanteismatriisi(
-    file.path(data_kansio, "kaanteismatriisi_14yq.csv")
-  )
-  arvonlisays_kertoimet_oikea <- lataa_arvonlisays_tuotos(
-    file.path(data_kansio, "arvonlisays_tuotos_14yn.csv")
-  )
-  kaikki_koodit <- rownames(kaanteismatriisi)
+#' BKT- ja tyollisyysvaikutus oikealla Tilastokeskus-datalla (14yq: 63
+#' toimialan tekninen kerroinmatriisi A + arvonlisayskerroin, 14yn: tuotos
+#' ja tyollisyys), TOIMIALA_KOODIT_14Y-vastaavuuden kautta. Ratkaisee taydet
+#' Leontief-yhtalot (x = (I-A)^-1 d) 63 toimialan tarkkuudella, joten
+#' vaikutus leviaa myos oman nelja ryhmamme ulkopuolelle koko
+#' toimialaverkostoon (alihankintaketjut).
+#'
+#' HYBRIDIMALLI - TARKEA RAJAUS IT-LAITTEISTA:
+#' it_laitteet JATETAAN POIS taman oikean Leontief-mallin piirista ja
+#' lasketaan edelleen oletukset.R:n karkealla kertoimella. Syy: 14yq:n
+#' A-matriisi mallintaa KOTIMAISTA tuotantoa - jos it_laitteet-shokki
+#' (Google-laitehankinnat, valtaosin tuontia) syotettaisiin sellaisenaan
+#' kysyntana toimialalle "26" (tietokoneiden valmistus), malli olettaisi
+#' VIRHEELLISESTI etta koko summa menee kotimaiseen tietokonevalmistukseen.
+#' Tama testattiin taman istunnon aikana: se nosti implisiittisen
+#' kokonaiskertoimen ~0,59:aan, mika on epauskottavan korkea tuontivaltaiselle
+#' laitehankinnalle. Koska taulukoista ei ole saatavilla toimialakohtaista
+#' tuontiosuutta, jolla shokin kotimainen osuus voitaisiin netottaa oikein
+#' ennen Leontief-laskentaa, it_laitteet-osuus lasketaan turvallisemmin
+#' oletukset.R:n karkealla, tuontivuodon tietoisesti huomioivalla
+#' kertoimella (ARVONLISAYS_KERTOIMET/TYOLLISYYS_KERTOIMET["it_laitteet"]).
+#' Rakentamisen kolme ryhmaa (talonrakennus, maa- ja vesirakentaminen,
+#' talotekniikka-/koneasennus) sen sijaan OVAT lahes kokonaan kotimaista
+#' palvelutuotantoa, joten niille taysi Leontief-malli on perusteltu.
+#'
+#' @return list(bkt = list(tulokset=..., yhteensa=...),
+#'   tyollisyys = list(tulokset=..., yhteensa=...)), samassa muodossa kuin
+#'   laske_vaikutus() palauttaa.
+laske_oikealla_datalla <- function(data_kansio, vuosi_data = vuoden_data_oletus) {
+  malli_data <- lataa_oikea_malli(data_kansio, vuosi_data)
+  toimialat <- malli_data$toimialat
+  rakennus_toimialat <- c("talonrakennus", "maa_ja_vesirakentaminen", "talotekniikka_asennus")
 
-  tulokset <- list()
-  yhteensa <- 0
+  bkt_tulokset <- list()
+  bkt_yhteensa <- 0
+  tyollisyys_tulokset <- list()
+  tyollisyys_yhteensa <- 0
+
   for (vuosi in names(VUOSIJAKAUMA)) {
     investointi_vuonna <- INVESTOINTI_YHTEENSA * VUOSIJAKAUMA[[vuosi]]
-    oma_shokki <- investointi_vuonna * TOIMIALAOSUUDET
-    d <- rakenna_kysyntavektori(kaikki_koodit, oma_shokki)
-    tulos <- arvonlisays_vaikutus_kaanteismatriisilla(
-      kaanteismatriisi, arvonlisays_kertoimet_oikea, d
-    )
-    tulokset[[vuosi]] <- list(
-      investointi = investointi_vuonna,
-      vaikutus_toimialoittain = setNames(tulos$tuotanto * arvonlisays_kertoimet_oikea, kaikki_koodit),
-      vaikutus_yhteensa = tulos$bkt
-    )
-    yhteensa <- yhteensa + tulos$bkt
+
+    # Rakentaminen: oikea Leontief-malli (63 toimialaa, kotimainen A)
+    rakennus_shokki <- investointi_vuonna * TOIMIALAOSUUDET[rakennus_toimialat]
+    d <- rakenna_kysyntavektori(toimialat, rakennus_shokki)
+    x <- leontief_tuotanto(malli_data$A, d)
+    bkt_rakennus <- sum(malli_data$va_kertoimet * x)
+    tyollisyys_rakennus <- sum(malli_data$tyollisyys_kertoimet * x)
+
+    # IT-laitteet: karkea arvio (ks. yllaoleva huomautus)
+    it_shokki <- investointi_vuonna * TOIMIALAOSUUDET[["it_laitteet"]]
+    bkt_it <- it_shokki * ARVONLISAYS_KERTOIMET[["it_laitteet"]]
+    tyollisyys_it <- it_shokki * TYOLLISYYS_KERTOIMET[["it_laitteet"]]
+
+    bkt_vuosi <- bkt_rakennus + bkt_it
+    tyollisyys_vuosi <- tyollisyys_rakennus + tyollisyys_it
+
+    bkt_tulokset[[vuosi]] <- list(investointi = investointi_vuonna, vaikutus_yhteensa = bkt_vuosi)
+    tyollisyys_tulokset[[vuosi]] <- list(investointi = investointi_vuonna, vaikutus_yhteensa = tyollisyys_vuosi)
+
+    bkt_yhteensa <- bkt_yhteensa + bkt_vuosi
+    tyollisyys_yhteensa <- tyollisyys_yhteensa + tyollisyys_vuosi
   }
-  list(tulokset = tulokset, yhteensa = yhteensa)
+
+  list(
+    bkt = list(tulokset = bkt_tulokset, yhteensa = bkt_yhteensa),
+    tyollisyys = list(tulokset = tyollisyys_tulokset, yhteensa = tyollisyys_yhteensa)
+  )
 }
 
 tulosta_raportti <- function(tulos) {
@@ -140,17 +178,18 @@ tulosta_raportti <- function(tulos) {
   ))
 }
 
-#' Tulostaa BKT-raportin, kun laskenta on tehty oikealla kaanteismatriisilla
-#' (laske_bkt_oikealla_datalla()). Ei tulosta toimialoittaista erittelya,
-#' koska kaanteismatriisin toimialoja on tyypillisesti kymmenia - vain
-#' vuosittainen ja kokonais-BKT-vaikutus.
+#' Tulostaa BKT-raportin, kun laskenta on tehty oikealla Tilastokeskus-
+#' datalla (laske_oikealla_datalla()$bkt). Ei tulosta toimialoittaista
+#' erittelya, koska taulukossa on 63 toimialaa - vain vuosittainen ja
+#' kokonais-BKT-vaikutus.
 tulosta_raportti_oikea <- function(tulos) {
   tulokset <- tulos$tulokset
   bkt_yhteensa <- tulos$yhteensa
 
   cat(strrep("=", 68), "\n", sep = "")
   cat("Google-datakeskusinvestoinnin (13 mrd. e, 2027-2028) BKT-vaikutus\n")
-  cat("Laskettu Tilastokeskuksen 14yq/14yn-datalla (data/-kansio)\n")
+  cat("Rakentaminen: Tilastokeskuksen 14yq/14yn-data (Leontief, 63 toimialaa)\n")
+  cat("IT-laitteet:  karkea arvio (oletukset.R) - ks. RAPORTTI.md\n")
   cat(strrep("=", 68), "\n", sep = "")
 
   for (vuosi in names(tulokset)) {
@@ -167,6 +206,35 @@ tulosta_raportti_oikea <- function(tulos) {
     "(implisiittinen kokonaiskerroin: %.2f e BKT / e investointia)\n",
     implisiittinen_kerroin
   ))
+}
+
+#' Tulostaa tyollisyysraportin oikealla datalla lasketuista tuloksista
+#' (laske_oikealla_datalla()$tyollisyys). HUOM: yksikko on tassa TYOLLISTEN
+#' MAARA (henkilotietoa Tilastokeskuksen "E1 Tyolliset"-rivista), EI
+#' henkilotyovuosi (htv) kuten karkeassa arviossa - lahella samaa asiaa,
+#' mutta ei tasmalleen sama mittayksikko (osa-aikaiset lasketaan tassa
+#' yhtena tyollisena, ei osittaisena htv:na).
+tulosta_tyollisyys_oikea <- function(tulos) {
+  tulokset <- tulos$tulokset
+  yhteensa <- tulos$yhteensa
+
+  cat("\n", strrep("=", 68), "\n", sep = "")
+  cat("Tyollisyysvaikutus (tyollisten maara)\n")
+  cat("Rakentaminen: Tilastokeskuksen 14yq/14yn-data - IT-laitteet: karkea arvio\n")
+  cat(strrep("=", 68), "\n", sep = "")
+
+  for (vuosi in names(tulokset)) {
+    tiedot <- tulokset[[vuosi]]
+    cat(sprintf(
+      "\n%s: investointi %.2f mrd. e -> tyollisyysvaikutus ~%.0f tyollista\n",
+      vuosi, tiedot$investointi / 1e9, tiedot$vaikutus_yhteensa
+    ))
+  }
+
+  cat(sprintf("\nKAIKKI VUODET YHTEENSA: ~%.0f tyollista\n", yhteensa))
+  cat("(vain rakennusvaiheen tilapainen tyollisyysvaikutus, ei konesalin\n")
+  cat(" kaytonaikaista, pysyvaa henkilostoa - ks. RAPORTTI.md. Yksikko on\n")
+  cat(" tyollisten maara, ei henkilotyovuosi - ks. yllaoleva huomautus.)\n")
 }
 
 tulosta_tyollisyys <- function(tulos) {
@@ -193,8 +261,8 @@ tulosta_tyollisyys <- function(tulos) {
 }
 
 if (oikea_data_saatavilla(data_kansio)) {
-  tulos_bkt_oikea <- tryCatch(
-    laske_bkt_oikealla_datalla(data_kansio),
+  tulos_oikea <- tryCatch(
+    laske_oikealla_datalla(data_kansio),
     error = function(e) {
       cat("Oikean datan kaytto epaonnistui:", conditionMessage(e), "\n")
       cat("Kaytetaan sen sijaan karkeita arvioita (oletukset.R).\n\n")
@@ -202,18 +270,19 @@ if (oikea_data_saatavilla(data_kansio)) {
     }
   )
 } else {
-  tulos_bkt_oikea <- NULL
+  tulos_oikea <- NULL
   cat("Ei loytynyt Tilastokeskus-dataa data/-kansiosta - kaytetaan karkeita,\n")
   cat("kirjallisuuteen pohjautuvia arvioita (oletukset.R). Ks. data/README.md,\n")
   cat("miten oikea data otetaan kayttoon.\n\n")
 }
 
-if (!is.null(tulos_bkt_oikea)) {
-  tulosta_raportti_oikea(tulos_bkt_oikea)
+if (!is.null(tulos_oikea)) {
+  tulosta_raportti_oikea(tulos_oikea$bkt)
+  tulosta_tyollisyys_oikea(tulos_oikea$tyollisyys)
 } else {
   tulos_bkt <- laske()
   tulosta_raportti(tulos_bkt)
-}
 
-tulos_tyollisyys <- laske_vaikutus(TYOLLISYYS_KERTOIMET)
-tulosta_tyollisyys(tulos_tyollisyys)
+  tulos_tyollisyys <- laske_vaikutus(TYOLLISYYS_KERTOIMET)
+  tulosta_tyollisyys(tulos_tyollisyys)
+}

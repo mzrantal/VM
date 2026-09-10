@@ -94,19 +94,31 @@ TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR <- c(
 TYOLLISYYS_KERTOIMET <- TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR / 1e6
 
 # Vastaavuus oman toimialaryhmityksemme (yllaoleva TOIMIALAOSUUDET) ja
-# Tilastokeskuksen panos-tuotostaulukoiden (14yq: Leontiefin kaanteismatriisi
-# - kotimainen; 14yn: tuotos ja arvonlisays toimialoittain) "Toimiala"-
-# muuttujan koodien valilla. Kaytetaan lataa_oikea_data.R:ssa, kun
-# data/-kansiosta loytyy oikeat CSV-viennit (ks. data/README.md).
+# Tilastokeskuksen panos-tuotostaulukoiden (14yq: tuotoksen panoskertoimet,
+# vahvistetusti kotimainen; 14yn: tuotos ja tyollisyys toimialoittain)
+# oikean "Toimiala"-muuttujan arvojen valilla. Perustuu kayttajan lataamiin
+# oikeisiin PxWeb-CSV-vienteihin (data/panoskertoimet_14yq.csv,
+# data/kayttotaulukko_14yn.csv) - taman istunnon aikana vahvistettu, ei
+# enaa arvaus.
 #
-# TARKISTAMATON ARVAUS - en ole paassyt katsomaan taulukoiden oikeaa
-# "Toimiala"-muuttujaa (rajapinta estetty tassa istunnossa). Alla on TOL
-# 2008 -luokitukseen perustuva paras arvioni koodeista. AVAA 14yq/14yn
-# PxWebissa, tarkista "Toimiala"-muuttujan tarkat koodit/nimikkeet, ja
-# korjaa nama vastaavasti ennen kuin luotat tuloksiin.
+# HUOM: Talla toimialaluokituksella (63 toimialaa) koko rakentaminen
+# (talonrakennus F41, maa- ja vesirakentaminen F42, erikoistunut
+# rakennustoiminta F43 - johon myos talotekniikka-/koneasennus TOL-tasolla
+# kuuluu) on YHDISTETTY yhdeksi "F Rakentaminen (41-43)" -toimialaksi.
+# Emme siis voi erottaa naiden kolmen oman ryhmamme vaikutusta toisistaan
+# taman taulukon tarkkuudella - niiden yhteenlaskettu shokki (25 %
+# investoinnista) kohdistuu samaan F-toimialaan. Tama ei haittaa BKT- tai
+# tyollisyyssumman laskentaa (rakenna_kysyntavektori() summaa ne oikein
+# yhteen), mutta toimialoittaista F41/F42/F43-erittelya ei oikealla
+# datalla voi tehda.
+#
+# Koodit ovat tarkoituksella VAIN taulukon toimialanimen ASCII-alkuosa
+# (esim. "F", "26"), ei koko nimea (joka sisaltaisi a/o-kirjaimia) - tama
+# valttaa R:n C-lokaalin merkkijonovertailun luotettavuusongelman
+# skandimerkkien kanssa (ks. lataa_oikea_data.R:n huomautus).
 TOIMIALA_KOODIT_14Y <- c(
-  talonrakennus = "F41",           # Talonrakentaminen
-  maa_ja_vesirakentaminen = "F42", # Maa- ja vesirakentaminen
-  talotekniikka_asennus = "F43",   # Erikoistunut rakennustoiminta (LVI, sahko, jaahdytys ym.)
-  it_laitteet = "C26"              # Tietokoneiden seka elektronisten ja optisten tuotteiden valmistus
+  talonrakennus = "F",
+  maa_ja_vesirakentaminen = "F",
+  talotekniikka_asennus = "F",
+  it_laitteet = "26"
 )

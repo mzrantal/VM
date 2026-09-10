@@ -1,64 +1,47 @@
-# Oikea Tilastokeskus-data tähän kansioon
+# Tilastokeskus-data (ladattu ja käytössä)
 
-Tämä kansio on tarkoitettu kahdelle Tilastokeskuksen (pxdata.stat.fi)
-panos-tuotos-taulukolle, jotka `laske_vaikutus.R` osaa lukea automaattisesti,
-jos ne löytyvät täältä. Jos tiedostoja ei ole, skripti käyttää
-`oletukset.R`:n karkeita arvioita (nykyinen oletustila).
+Tässä kansiossa on kaksi Tilastokeskuksen (pxdata.stat.fi) taulukkoa, jotka
+`laske_vaikutus.R` lukee automaattisesti rakentamisen BKT- ja
+työllisyysvaikutuksen laskentaan (ks. `../RAPORTTI.md`). Tiedostot on
+ladattu ja vahvistettu tässä projektissa - ne EIVÄT ole esimerkkejä.
 
-## Miksi juuri nämä kaksi taulukkoa
+## Tiedostot
 
-- **14yq - Leontiefin käänteismatriisi**: valmiiksi laskettu (I-A)^-1,
-  laskettu Tilastokeskuksen mukaan **kotimaisesta** käyttötaulukosta (ei siis
-  sisällä tuontia) - sopii suoraan tälle mallille ilman lisäkäsittelyä.
-- **14yn - Panos-tuotostaulukko perushintaan** (tai vastaava taulukko, josta
-  löytyvät toimialoittainen tuotos ja arvonlisäys): tarvitaan, koska
-  käänteismatriisi itsessään ei sisällä arvonlisäystietoa - siitä lasketaan
-  toimialoittainen arvonlisäys/tuotos-kerroin.
+- **`panoskertoimet_14yq.csv`** - taulukko 14yq "Tuotoksen panoskertoimet"
+  (`https://pxdata.stat.fi/PxWeb/pxweb/fi/StatFin/StatFin__pt/14yq.px/`):
+  toimialoittainen (63 toimialaa) tekninen kerroinmatriisi A - kuinka monta
+  euroa toimialan i tuotantoa tarvitaan yhtä euroa kohti toimialan j
+  tuotosta. **Vahvistetusti kotimainen** (ei sisällä tuontia). Sisältää myös
+  rivin "B1GPH Bruttoarvonlisäys perushintaan" (arvonlisäys/tuotos-kerroin
+  suoraan, ei tarvitse laskea itse).
+- **`kayttotaulukko_14yn.csv`** - taulukko 14yn "Panos-tuotostaulukko
+  perushintaan"
+  (`https://pxdata.stat.fi/PxWeb/pxweb/fi/StatFin/StatFin__pt/14yn.px/`):
+  tästä käytetään vain rivejä "P1R Tuotos perushintaan" (toimialan tuotos,
+  milj. e) ja "E1 Työlliset, kotimaa (1000 henkeä)" (työllisyys), joista
+  `lataa_oikea_data.R` laskee työllisyys/tuotos-kertoimen.
 
-## Näin viet tiedot PxWebistä
+Molemmat kattavat vuodet 2021-2023 (PxWeb-vienti, puolipisteerotin,
+desimaalipiste, puuttuva arvo merkitty pisteellä ".", UTF-8-koodaus BOM-
+merkillä). Laskennassa käytetään oletuksena vuotta 2023
+(`vuoden_data_oletus`, `lataa_oikea_data.R`).
 
-1. Avaa taulukko pxdata.stat.fi:ssä (Kansantalouden tilinpito -> Tarjonta- ja
-   käyttötaulukot / Panos-tuotos -> 14yq / 14yn tai vastaava).
-2. Valitse kaikki toimialat riveille ja sarakkeille (14yq) / tarvittavat
-   muuttujat (tuotos, arvonlisäys) toimialoittain (14yn).
-3. Vie taulukko CSV-muodossa (yleensä "Lataa tiedosto" / "Vie" -> CSV).
-4. Tallenna tiedostot tähän kansioon täsmälleen näillä nimillä:
-   - `kaanteismatriisi_14yq.csv`
-   - `arvonlisays_tuotos_14yn.csv`
+## Miksi vain rakentamiselle, ei IT-laitteille
 
-## Odotettu tiedostomuoto
+`laske_vaikutus.R` kohdistaa näistä taulukoista rakennettavan Leontief-
+mallin vain rakentamiseen (talonrakennus, maa- ja vesirakentaminen,
+talotekniikka-/koneasennus - yhdistetty toimialaksi "F Rakentaminen
+(41-43)"). IT-laitteet lasketaan edelleen `oletukset.R`:n karkealla
+arviolla, koska 14yq:n kotimainen A-matriisi olettaisi virheellisesti että
+koko IT-laitteiden kysyntä kohdistuu kotimaiseen tietokonevalmistukseen
+(toimiala 26) - todellisuudessa se on lähes kokonaan tuontia. Katso
+tarkempi selitys `../RAPORTTI.md`:n kohdasta "Miksi IT-laitteet ei käytä
+oikeaa Leontief-mallia".
 
-**`kaanteismatriisi_14yq.csv`**: ensimmäinen sarake toimialakoodit (rivit),
-muut sarakkeet toimialakoodien mukaan nimettyjä (sarakkeet), solut
-käänteismatriisin arvoja. Rivien ja sarakkeiden koodien on täsmättävä.
+## Jos päivität tai vaihdat taulukot
 
-```
-toimiala,F41,F42,F43,C26,...
-F41,1.42,0.03,0.01,0.00,...
-F42,0.02,1.31,0.00,0.00,...
-...
-```
-
-**`arvonlisays_tuotos_14yn.csv`**: sarakkeet `toimiala`, `tuotos`,
-`arvonlisays` (samat toimialakoodit kuin yllä).
-
-```
-toimiala,tuotos,arvonlisays
-F41,12345,6789
-F42,...,...
-```
-
-**HUOM:** PxWebin CSV-vienti ei aina näytä täsmälleen tältä (erotin,
-otsikkorivien määrä, desimaalipilkku vs. -piste voivat vaihdella). Jos
-`lataa_oikea_data.R`:n lukufunktiot eivät toimi sellaisenaan viedyn
-tiedoston kanssa, muokkaa niitä vastaamaan oikeaa muotoa - virheilmoitus
-kertoo yleensä mikä täsmää väärin.
-
-## Toimialakoodien vastaavuus
-
-`oletukset.R`:n `TOIMIALA_KOODIT_14Y`-muuttujassa on **tarkistamaton arvaus**
-siitä, mitkä 14yq/14yn:n toimialakoodit vastaavat tämän mallin neljää
-toimialaryhmää (talonrakennus, maa- ja vesirakentaminen,
-talotekniikka-/koneasennus, IT-laitteet). Tarkista ja korjaa nämä koodit
-taulukon oikeiden "Toimiala"-muuttujan arvojen mukaan ennen tulosten
-käyttöä.
+Jos lataat uudemman vuoden taulukot tai eri toimialaluokituksen, säilytä
+samat tiedostonimet (`panoskertoimet_14yq.csv`, `kayttotaulukko_14yn.csv`)
+niin `laske_vaikutus.R` löytää ne automaattisesti. Jos toimialaluokitus
+muuttuu (esim. hienojakoisempi, F41/F42/F43 erikseen), päivitä myös
+`oletukset.R`:n `TOIMIALA_KOODIT_14Y`-vastaavuus vastaamaan uusia koodeja.
