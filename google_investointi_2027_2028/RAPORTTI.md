@@ -15,36 +15,41 @@ arvonlisäystä sekä suoraan (rakennus- ja asennustyö) että epäsuorasti
 (alihankintaketjut: sora, betoni, sähkötarvikkeet, kuljetukset jne.).
 
 Tässä repossa (`google_investointi_2027_2028/`) on toteutettu laskentaputki,
-joka tekee juuri tämän jaottelun. Tämän istunnon karkealla, kirjallisuuteen
-pohjautuvalla oletuksella (ks. rajoitteet alla) tulos on:
+joka tekee juuri tämän jaottelun. Nykyisillä oletuksilla (`oletukset.py`,
+ks. rajoitteet alla) tulos on:
 
 | Vuosi | Investointi | BKT-vaikutus | Osuus investoinnista |
 |---|---|---|---|
-| 2027 | 6,50 mrd. e | **~2,26 mrd. e** | 35 % |
-| 2028 | 6,50 mrd. e | **~2,26 mrd. e** | 35 % |
-| **Yhteensä** | **13,00 mrd. e** | **~4,51 mrd. e** | **35 %** |
+| 2027 | 6,50 mrd. e | **~1,62 mrd. e** | 25 % |
+| 2028 | 6,50 mrd. e | **~1,62 mrd. e** | 25 % |
+| **Yhteensä** | **13,00 mrd. e** | **~3,23 mrd. e** | **25 %** |
 
-Toisin sanoen: karkealla arviolla noin **kolmannes** investoinnin
-euromäärästä (n. 4,5 mrd. e kahden vuoden aikana, n. 2,3 mrd. e/vuosi)
+Toisin sanoen: karkealla arviolla noin **neljännes** investoinnin
+euromäärästä (n. 3,2 mrd. e kahden vuoden aikana, n. 1,6 mrd. e/vuosi)
 näkyisi Suomen BKT:ssä lisäyksenä rakennusvaiheen aikana. Loput valuvat
 tuontiin (etenkin IT-laitteet) tai ulkomaisiin voittoihin. **Tämä on
 suuruusluokka-arvio, ei tarkka tilastollinen laskelma** - katso alta miksi,
 ja miten laskennan voi tarkentaa oikealla aineistolla.
 
-Vertailun vuoksi: Suomen BKT oli v. 2024 noin 280 mrd. euroa, joten n. 2,3
-mrd. e/vuosi vastaisi karkeasti n. 0,8 prosenttiyksikköä yhden vuoden BKT:sta
+Vertailun vuoksi: Suomen BKT oli v. 2024 noin 280 mrd. euroa, joten n. 1,6
+mrd. e/vuosi vastaisi karkeasti n. 0,6 prosenttiyksikköä yhden vuoden BKT:sta
 - ei mitätön, mutta ei myöskään dramaattinen, kertaluonteinen
 rakennusvaiheen piikki.
+
+(Osuus laski aiemmasta 35 %:sta 25 %:iin, koska oletettua IT-laitteiden
+osuutta investoinnista nostettiin 50 %:sta 75 %:iin 10.9.2026 tehdyssä
+`oletukset.py`-päivityksessä - IT-laitteiden kotimaisen arvonlisäyksen
+kerroin on toimialoista matalin.)
 
 ## Menetelmä (mitä koodi tekee)
 
 1. **Kysyntäshokit toimialoittain** (`oletukset.py`): 13 mrd. euron
    investointi jaetaan neljään toimialaryhmään tyypillisen suuren
    konesalihankkeen kustannusrakenteen mukaan:
-   - IT-laitteet (palvelimet, verkkolaitteet, GPU:t) - 50 %
-   - Talonrakennus (konesalirakennukset) - 20 %
-   - Talotekniikka-/koneasennus (sähkö, LVI, jäähdytys) - 20 %
-   - Maa- ja vesirakentaminen (tontti, liittymät, infra) - 10 %
+   - IT-laitteet (palvelimet, verkkolaitteet, GPU:t) - 75 %
+   - Talonrakennus (konesalirakennukset) - 10 %
+   - Talotekniikka-/koneasennus (sähkö, LVI, jäähdytys) - 10 %
+   - Maa- ja vesirakentaminen (tontti, liittymät, infra) - 5 %
    - Vuosijakauma 2027/2028: oletus 50/50.
 
 2. **Kotimaisen arvonlisäyksen kertoimet** (`oletukset.py`): kullekin
@@ -106,9 +111,10 @@ muita matalampi:
 
 | IT-laitteiden osuus | Implisiittinen kokonaiskerroin | BKT-vaikutus (13 mrd. e) |
 |---|---|---|
-| 40 % | ~0,39 | ~5,0 mrd. e |
-| 50 % (perusoletus) | ~0,35 | ~4,5 mrd. e |
+| 50 % | ~0,35 | ~4,5 mrd. e |
 | 60 % | ~0,31 | ~4,0 mrd. e |
+| 75 % (nykyinen oletus) | ~0,25 | ~3,2 mrd. e |
+| 90 % | ~0,19 | ~2,5 mrd. e |
 
 Voit testata muita jakaumia muokkaamalla `oletukset.py`:n
 `TOIMIALAOSUUDET`-sanakirjaa ja ajamalla `laske_vaikutus.py` uudelleen.
