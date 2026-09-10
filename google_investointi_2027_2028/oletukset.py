@@ -33,13 +33,13 @@ VUOSIJAKAUMA = {
 TOIMIALAOSUUDET = {
     # Palvelimet, verkkolaitteet, GPU:t yms. (TOL 26/46) - hyvin tuontivaltainen,
     # Suomessa ei juuri valmisteta vastaavia laitteita
-    "it_laitteet": 0.50,
+    "it_laitteet": 0.75,
     # Konesalirakennukset (TOL F41)
-    "talonrakennus": 0.20,
+    "talonrakennus": 0.10,
     # Sahko-, LVI-, jaahdytys- ja koneasennus (TOL F43 / C33)
-    "talotekniikka_asennus": 0.20,
+    "talotekniikka_asennus": 0.10,
     # Tontti, liittymat, tie- ja kaapelityot (TOL F42)
-    "maa_ja_vesirakentaminen": 0.10,
+    "maa_ja_vesirakentaminen": 0.05,
 }
 
 assert abs(sum(TOIMIALAOSUUDET.values()) - 1.0) < 1e-9
