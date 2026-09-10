@@ -92,3 +92,21 @@ TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR <- c(
   maa_ja_vesirakentaminen = 5.0
 )
 TYOLLISYYS_KERTOIMET <- TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR / 1e6
+
+# Vastaavuus oman toimialaryhmityksemme (yllaoleva TOIMIALAOSUUDET) ja
+# Tilastokeskuksen panos-tuotostaulukoiden (14yq: Leontiefin kaanteismatriisi
+# - kotimainen; 14yn: tuotos ja arvonlisays toimialoittain) "Toimiala"-
+# muuttujan koodien valilla. Kaytetaan lataa_oikea_data.R:ssa, kun
+# data/-kansiosta loytyy oikeat CSV-viennit (ks. data/README.md).
+#
+# TARKISTAMATON ARVAUS - en ole paassyt katsomaan taulukoiden oikeaa
+# "Toimiala"-muuttujaa (rajapinta estetty tassa istunnossa). Alla on TOL
+# 2008 -luokitukseen perustuva paras arvioni koodeista. AVAA 14yq/14yn
+# PxWebissa, tarkista "Toimiala"-muuttujan tarkat koodit/nimikkeet, ja
+# korjaa nama vastaavasti ennen kuin luotat tuloksiin.
+TOIMIALA_KOODIT_14Y <- c(
+  talonrakennus = "F41",           # Talonrakentaminen
+  maa_ja_vesirakentaminen = "F42", # Maa- ja vesirakentaminen
+  talotekniikka_asennus = "F43",   # Erikoistunut rakennustoiminta (LVI, sahko, jaahdytys ym.)
+  it_laitteet = "C26"              # Tietokoneiden seka elektronisten ja optisten tuotteiden valmistus
+)

@@ -227,31 +227,49 @@ puolilla Suomea, ei yhdelle työmaalle.
 
 ## Näin jatkat tarkemmalla datalla
 
-1. Etsi selaimella Tilastokeskuksen PxWeb-palvelusta
-   (`pxdata.stat.fi/PxWeb/pxweb/fi/StatFin/`) kansantalouden tilinpidon
-   kohdasta oikea tarjonta- ja käyttötaulukko / panos-tuotostaulukko
-   (uusin saatavilla oleva vuosi).
-2. Aseta taulukon rajapinta-URL `hae_tilastokeskus.R`:n
-   `TAULUKON_URL`-muuttujaan.
-3. Asenna tarvittavat R-paketit: `install.packages(c("httr", "jsonlite"))`.
-4. Hae taulukon metatiedot (`hae_taulukon_metatiedot`) selvittääksesi
-   toimialakoodit ja muuttujat, rakenna kysely ja hae data
-   (`hae_pxweb_data`).
-5. Muodosta taulukoista tekninen kerroinmatriisi A (vain kotimaiset
-   välituotepanokset suhteessa tuotokseen) ja arvonlisäyskertoimet
-   toimialoittain.
-6. Syötä ne `malli.R`:n `arvonlisays_vaikutus(A, arvonlisayskertoimet, d)`
-   -funktioon `oletukset.R`:n kysyntäshokkivektorin (`d`) kanssa - saat
-   tarkan, tuontivuodosta puhdistetun BKT-vaikutuksen.
+BKT-laskennalle on nyt kaksi valmista taulukkoa tunnistettu: **14yq**
+(Leontiefin käänteismatriisi - Tilastokeskuksen mukaan laskettu
+**kotimaisesta** käyttötaulukosta, eli sopii suoraan tälle mallille) ja
+**14yn** (Panos-tuotostaulukko perushintaan, josta saadaan toimialoittainen
+tuotos ja arvonlisäys). `laske_vaikutus.R` osaa käyttää näitä automaattisesti,
+kun ne on viety paikallisiksi CSV-tiedostoiksi:
+
+1. Avaa 14yq ja 14yn pxdata.stat.fi:ssä ja vie (Lataa/Vie -> CSV).
+2. Tallenna tiedostot kansioon `data/` nimillä `kaanteismatriisi_14yq.csv`
+   ja `arvonlisays_tuotos_14yn.csv` - katso tarkka odotettu muoto ja
+   ohjeet `data/README.md`:stä.
+3. Tarkista ja korjaa `oletukset.R`:n `TOIMIALA_KOODIT_14Y`-vastaavuus
+   (oma toimialaryhmä <-> taulukoiden oikea "Toimiala"-koodi) - nykyiset
+   koodit (F41/F42/F43/C26) ovat **tarkistamaton arvaus**, koska tätä
+   istuntoa ei ole voitu ajaa oikealla PxWeb-viennillä (rajapinta estetty).
+4. Aja `Rscript laske_vaikutus.R` uudelleen - jos molemmat CSV:t löytyvät
+   `data/`-kansiosta, skripti käyttää automaattisesti tarkkaa
+   Leontief-laskentaa (`malli.R`:n `arvonlisays_vaikutus_kaanteismatriisilla()`)
+   karkean arvion sijaan, ja tulostaa sen selvästi ("Laskettu Tilastokeskuksen
+   14yq/14yn-datalla"). Jos tiedostoja ei löydy tai ne eivät täsmää odotettuun
+   muotoon, skripti kertoo sen ja palaa automaattisesti karkeaan arvioon -
+   mikään ei siis mene rikki, vaikka tiedostoja ei olisikaan vielä saatavilla.
+
+Huomaa: tämä oikean datan polku parantaa vain **BKT-laskentaa**.
+Työllisyysvaikutus (`TYOLLISYYS_KERTOIMET`) käyttää edelleen karkeaa arviota,
+koska vastaavaa valmista toimialoittaista työllisyys-panos-tuotostaulukkoa
+ei ole (vielä) otettu käyttöön.
 
 ## Tiedostot
 
-- `oletukset.R` - investoinnin toimiala- ja vuosijakauma sekä
-  arvonlisäys- ja työllisyyskertoimet (muokattavat lähtöoletukset)
-- `malli.R` - Leontief-panos-tuotoslaskenta (base R, ei
-  ulkoisia riippuvuuksia)
-- `hae_tilastokeskus.R` - PxWeb-rajapinnan hakufunktiot (riippuvuudet:
-  `httr`, `jsonlite`)
-- `laske_vaikutus.R` - pääskripti, tulostaa sekä BKT- että
-  työllisyysvaikutuksen vuosittain ja toimialoittain
+- `oletukset.R` - investoinnin toimiala- ja vuosijakauma, arvonlisäys- ja
+  työllisyyskertoimet, sekä `TOIMIALA_KOODIT_14Y`-vastaavuus oikeaa dataa
+  varten (muokattavat lähtöoletukset)
+- `malli.R` - Leontief-panos-tuotoslaskenta (base R, ei ulkoisia
+  riippuvuuksia): sekä oma matriisin ratkaisu (`leontief_tuotanto`) että
+  valmiin käänteismatriisin käyttö (`arvonlisays_vaikutus_kaanteismatriisilla`)
+- `lataa_oikea_data.R` - lukee `data/`-kansion CSV-viennit (14yq, 14yn) ja
+  rakentaa niistä kysyntävektorin oikeassa toimialaluokituksessa
+- `data/` - tähän tallennetaan Tilastokeskuksesta viedyt CSV-tiedostot
+  (ks. `data/README.md`)
+- `hae_tilastokeskus.R` - PxWeb-rajapinnan hakufunktiot elävää hakua varten
+  (riippuvuudet: `httr`, `jsonlite`) - vaihtoehto CSV-tuonnille, jos
+  rajapintayhteys on käytettävissä
+- `laske_vaikutus.R` - pääskripti: käyttää oikeaa dataa jos saatavilla,
+  muuten karkeaa arviota; tulostaa BKT- ja työllisyysvaikutuksen
   (`Rscript laske_vaikutus.R`)

@@ -36,3 +36,31 @@ arvonlisays_vaikutus <- function(A, arvonlisays_kertoimet, kysynta) {
   bkt <- sum(arvonlisays_kertoimet * x)
   list(bkt = bkt, tuotanto = x)
 }
+
+#' BKT-vaikutus valmiiksi lasketulla Leontiefin kaanteismatriisilla.
+#'
+#' Kayta tata (etka arvonlisays_vaikutus()-funktiota), kun Tilastokeskuksesta
+#' on haettu valmis kaanteismatriisi (I-A)^-1 (esim. taulukko 14yq,
+#' "Leontiefin kaanteismatriisi", joka on Tilastokeskuksen mukaan laskettu
+#' KOTIMAISESTA kayttotaulukosta) - talloin matriisia ei tarvitse (eika pida)
+#' invertoida uudelleen, vaan riittaa suora matriisikertolasku.
+#'
+#' @param kaanteismatriisi Valmis (I-A)^-1 -matriisi (n x n), esim. 14yq
+#' @param arvonlisays_kertoimet Arvonlisayskertoimet (arvonlisays/tuotos)
+#'   samassa toimialajarjestyksessa kuin kaanteismatriisin rivit/sarakkeet
+#'   (esim. taulukosta 14yn)
+#' @param kysynta Kysyntashokkivektori (pituus n), samassa
+#'   toimialaluokituksessa kuin kaanteismatriisi
+#' @return list(bkt = kokonais-BKT-vaikutus, tuotanto = toimialoittainen
+#'   kokonaistuotanto)
+arvonlisays_vaikutus_kaanteismatriisilla <- function(
+  kaanteismatriisi, arvonlisays_kertoimet, kysynta
+) {
+  n <- length(kysynta)
+  if (!all(dim(kaanteismatriisi) == c(n, n))) {
+    stop("Kaanteismatriisin tulee olla n x n, jossa n = kysynta-vektorin pituus.")
+  }
+  x <- as.numeric(kaanteismatriisi %*% kysynta)
+  bkt <- sum(arvonlisays_kertoimet * x)
+  list(bkt = bkt, tuotanto = x)
+}
