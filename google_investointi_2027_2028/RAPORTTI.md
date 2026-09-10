@@ -103,6 +103,40 @@ kerroin on toimialoista matalin.)
   suuri, lyhyessä ajassa toteutuva rakennusinvestointi muuta rakentamista
   (esim. jos rakennusalan työvoima on jo täystyöllistetty).
 
+## Lähteet ja taustaoletusten perustelut
+
+**Rehellisyyshuomio ensin:** koska tämän istunnon verkkoyhteys oli estetty (ks.
+edellä), en pystynyt hakemaan enkä tarkistamaan täsmällisiä lähdeviitteitä
+(tekijä, julkaisuvuosi, sivunumero) käytetyille kertoimille. Alla kerrotaan,
+minkä tyyppisiin - oikeasti olemassa oleviin - lähteisiin arvio perustuu, ja
+mistä ne kannattaa itse tarkistaa ennen virallista käyttöä. **Älä käytä tätä
+listaa sellaisenaan tarkistettuna lähdeluettelona** - se on kartta siitä missä
+oikeat luvut sijaitsevat, ei sitaatti niistä.
+
+**Arvonlisäys- ja tuontikertoimet (0,15 / 0,60 / 0,45 / 0,62):**
+- Ensisijainen, oikea lähde: Tilastokeskuksen kansantalouden tilinpito -
+  tarjonta- ja käyttötaulukot / panos-tuotostaulukot (pxdata.stat.fi,
+  StatFin-tietokanta). Näistä toimialoittainen tuotos, välituotekäyttö,
+  arvonlisäys ja tuonti saadaan tarkasti, ja niistä lasketaan malli.R:n
+  Leontief-laskentaan tarvittava kerroinmatriisi.
+- Yleistä tietoa toimialojen kotimaisuusasteesta ja investointien
+  kerrannaisvaikutuksista julkaisevat mm. Elinkeinoelämän tutkimuslaitos
+  (Etla), Valtion taloudellinen tutkimuskeskus (VATT) ja Suomen Pankki
+  talouskatsauksissaan.
+- Konesalihankkeiden tyypillisestä kustannusrakenteesta (IT-laitteiden suuri
+  osuus rakennus- ja talotekniikkaosuuteen nähden) julkaisevat markkina-
+  analyyseja mm. Uptime Institute, JLL, CBRE ja Synergy Research Group.
+
+**Työllisyyskertoimet (1,0 / 6,5 / 5,5 / 5,0 htv/milj. e):**
+- Ensisijainen, oikea lähde: Tilastokeskuksen toimialoittainen
+  työllisyys-panos-tuotostaulukko (sama tietokanta kuin yllä), josta saisi
+  tarkat htv/tuotanto-suhteet toimialoittain.
+- Rakentamisen työllisyyskertoimista julkaisee arvioita mm. Rakennusteollisuus
+  RT suhdanne- ja työllisyyskatsauksissaan.
+- IT-laitteiden matala kerroin seuraa suoraan siitä, ettei Suomessa juuri ole
+  palvelin-/verkkolaitevalmistusta - tämä on yleinen päätelmä, ei yhden
+  nimetyn tutkimuksen luku.
+
 ## Herkkyys oletuksille
 
 Implisiittinen kokonaiskerroin (BKT-vaikutus / investointi) riippuu
@@ -118,6 +152,54 @@ muita matalampi:
 
 Voit testata muita jakaumia muokkaamalla `oletukset.R`:n
 `TOIMIALAOSUUDET`-vektoria ja ajamalla `laske_vaikutus.R` uudelleen.
+
+## Työllisyysvaikutukset
+
+Samalla toimialoittaisella kysyntäshokkimallilla voidaan arvioida karkeasti
+myös investoinnin työllisyysvaikutus: arvonlisäyskertoimien sijaan käytetään
+toimialoittaisia työllisyyskertoimia (henkilötyövuotta, htv, miljoonaa euroa
+kohti - `TYOLLISYYS_KERTOIMET` tiedostossa `oletukset.R`). Nykyisillä
+oletuksilla (`laske_vaikutus.R`):
+
+| Vuosi | IT-laitteet | Talonrakennus | Talotekniikka | Maa- ja vesirak. | Yhteensä |
+|---|---|---|---|---|---|
+| 2027 | 4 875 htv | 4 225 htv | 3 575 htv | 1 625 htv | **14 300 htv** |
+| 2028 | 4 875 htv | 4 225 htv | 3 575 htv | 1 625 htv | **14 300 htv** |
+| **Yhteensä** | | | | | **~28 600 htv** |
+
+Karkeasti siis **n. 14 300 henkilötyövuotta vuodessa** (yhteensä n. 28 600 htv
+kahden vuoden aikana) rakennus- ja asennustyötä sekä IT-laitteiden
+logistiikkaan/asennukseen liittyvää työtä. Huomioita:
+
+- **Henkilötyövuosi (htv) ei ole sama asia kuin pysyvä työpaikka.** Yksi htv
+  voi jakautua usealle henkilölle osa-aikaisena tai lyhytkestoisena työnä -
+  luku ei tarkoita 28 600 uutta pysyvää työntekijää.
+- **Vain rakennusvaiheen tilapäinen vaikutus.** Työ liittyy 2027-2028
+  rakennus- ja asennustöihin; suurin osa siitä päättyy konesalin
+  valmistuttua.
+- **Konesalin käytönaikainen, pysyvä henkilöstö on tätä paljon pienempi.**
+  Suurten konesalien pysyvä ylläpito-, turvallisuus- ja tekninen henkilöstö
+  tunnetaan yleisesti suhteellisen pieneksi investoinnin kokoon nähden -
+  tyypillisesti kymmeniä tai muutamia satoja työntekijöitä yhtä suurta
+  konesalia kohti, ei tuhansia. Tätä pysyvää vaikutusta ei ole tässä
+  arvioitu numeerisesti, koska luotettavaa, tarkistettua lukua Googlen
+  Suomen-laitosten henkilöstösuunnitelmista ei ollut tämän istunnon aikana
+  saatavilla.
+- **IT-laitteiden suuri osuus (75 %) tuo silti merkittävän
+  työllisyysvaikutuksen matalasta kertoimesta huolimatta**, koska volyymi on
+  niin suuri - tämä työ on kuitenkin pääosin logistiikkaa, tukkukauppaa ja
+  asennusta, ei valmistusta.
+- **Sama Type I -rajoitus kuin BKT-mallissa:** ei indusoitua kulutuskysyntää
+  eikä kapasiteettirajoitteita (esim. jos rakennusala on jo lähellä
+  täystyöllisyyttä, shokki voisi nostaa palkkoja/hintoja työllisyyden kasvun
+  sijaan).
+
+Vertailun vuoksi: Suomen koko rakennusala on työllistänyt viime vuosina
+suuruusluokkaa 170 000-200 000 henkilöä (karkea, tässä istunnossa
+tarkistamaton arvio). N. 14 300 htv/vuosi vastaisi siis karkeasti muutamaa
+prosenttia koko alan työvoimasta - merkittävä yksittäiselle hankkeelle, mutta
+jakautuisi todennäköisesti usealle vuodelle ja monelle eri alihankkijalle eri
+puolilla Suomea, ei yhdelle työmaalle.
 
 ## Näin jatkat tarkemmalla datalla
 
@@ -141,10 +223,11 @@ Voit testata muita jakaumia muokkaamalla `oletukset.R`:n
 ## Tiedostot
 
 - `oletukset.R` - investoinnin toimiala- ja vuosijakauma sekä
-  arvonlisäyskertoimet (muokattavat lähtöoletukset)
+  arvonlisäys- ja työllisyyskertoimet (muokattavat lähtöoletukset)
 - `malli.R` - Leontief-panos-tuotoslaskenta (base R, ei
   ulkoisia riippuvuuksia)
 - `hae_tilastokeskus.R` - PxWeb-rajapinnan hakufunktiot (riippuvuudet:
   `httr`, `jsonlite`)
-- `laske_vaikutus.R` - pääskripti, tulostaa BKT-vaikutuksen
-  vuosittain ja toimialoittain (`Rscript laske_vaikutus.R`)
+- `laske_vaikutus.R` - pääskripti, tulostaa sekä BKT- että
+  työllisyysvaikutuksen vuosittain ja toimialoittain
+  (`Rscript laske_vaikutus.R`)

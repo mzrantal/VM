@@ -52,3 +52,24 @@ ARVONLISAYS_KERTOIMET <- c(
   talotekniikka_asennus = 0.45,
   maa_ja_vesirakentaminen = 0.62
 )
+
+# Tyollisyyskertoimet: henkilotyovuosia (htv) miljoonaa tuotantoon kaytettya
+# euroa kohti, toimialoittain (suora + epasuora vaikutus alihankintaketjussa).
+# Tallennettu tassa yksikossa "htv / euro" (ts. jaettu 1e6:lla), jotta
+# laske_vaikutus.R:n yleinen kerroinlaskin (joka kertoo euromaaraisen
+# kysyntashokin suoraan kertoimella) toimii samalla tavalla kuin
+# ARVONLISAYS_KERTOIMET:n kanssa.
+#
+# KARKEITA ARVIOITA - ei Tilastokeskuksen tyollisyys-panos-tuotostaulukoista
+# laskettuja tarkkoja kertoimia, samasta rajapintarajoitteen syysta kuin
+# ARVONLISAYS_KERTOIMET (ks. yllaoleva huomautus ja RAPORTTI.md:n kohdat
+# "Lahteet..." ja "Tyollisyysvaikutukset"). Rakentaminen on selvasti
+# tyovoimavaltaisempaa kuin tuontivaltaiset IT-laitteet, joissa kotimaahan jaa
+# lahinna logistiikka-, tukkukauppa- ja asennustyota.
+TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR <- c(
+  it_laitteet = 1.0,
+  talonrakennus = 6.5,
+  talotekniikka_asennus = 5.5,
+  maa_ja_vesirakentaminen = 5.0
+)
+TYOLLISYYS_KERTOIMET <- TYOLLISYYS_KERTOIMET_HTV_PER_MILJ_EUR / 1e6
